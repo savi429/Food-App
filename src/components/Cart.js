@@ -1,7 +1,7 @@
 import ItemList from "./ItemList";
 import { useSelector } from "react-redux";
 const Cart = () => {
-  const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = useSelector((state) => state.reducer.cart.items);
   return (
     <div className="text-center w-9/12 m-auto">
       <h3>Cart</h3>

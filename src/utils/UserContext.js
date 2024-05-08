@@ -1,6 +1,3 @@
 import { createContext } from "react";
-const UserContext = createContext({
-  loggedInUser: "Default",
-  wishList: [],
-});
+const UserContext = createContext();
 export default UserContext;

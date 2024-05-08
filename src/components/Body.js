@@ -1,39 +1,41 @@
 import { useState, useEffect, useCallback, useContext } from "react";
 import axios from "axios";
 import RestuarantCard, { withPromotedLabel } from "./RestaurantCard";
-// import FoodCarousel from "./FoodCarousel";
-import { SWIGGY_URL } from "../utils/constants";
+import { SWIGGY_URL, TYPES, WIDGET_CONFIG } from "../utils/constants";
 import ShimmerUi from "./ShimmerUi";
 import { Link } from "react-router-dom";
 import useOnlineStatus from "./../utils/useOnlineStatus";
-import UserContext from "../utils/UserContext";
+import Carousel from "./Carousel";
+import { useAppContext } from "../utils/contextProvider";
+import payload from "./../utils/payload.json";
+import BannerCarousel from "./BannerCarousel";
+import TopRestaurants from "./TopRestaurants";
 const Body = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const onlineStatus = useOnlineStatus();
   const RestaurantCardWithPromoted = withPromotedLabel(RestuarantCard);
-  const { setUserInfo, loggedInUser } = useContext(UserContext);
+  const [homePageData, setHomePageData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await axios.get(SWIGGY_URL);
-      console.log("res..", res?.data?.data?.cards[3]);
+      setHomePageData(res?.data?.data?.cards);
       setRestaurants(
-        res?.data?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
+        res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
           ?.restaurants
       );
       setFilteredRestaurants(
-        res?.data?.data?.cards[2]?.card?.card?.gridElements?.infoWithStyle
+        res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
           ?.restaurants
       );
     };
     fetchData();
   }, []);
 
-  const getTopRatedRestaurants = (event) => {
-    console.log(event);
-    setRestaurants(restaurants.slice(0, 4));
+  const getTopRatedRestaurants = () => {
+    setFilteredRestaurants(restaurants.slice(0, 4));
   };
 
   const getSearchResults = () => {
@@ -46,42 +48,89 @@ const Body = () => {
   if (!onlineStatus) {
     return <h1> Look like your offline!..Please check internet connection!</h1>;
   }
+  const getWidgetUI = (cardData) => {
+    const widget = cardData?.gridElements?.infoWithStyle;
+
+    const id = cardData?.id;
+    switch (id) {
+      case "whats_on_your_mind":
+        return <BannerCarousel cardInfo={cardData} />;
+      case "popular_restaurants_title":
+        return <h2>{cardData.title}</h2>;
+      case "top_brands_for_you":
+        return <TopRestaurants cardInfo={cardData} />;
+      default:
+        return null;
+    }
+    if (
+      widget?.["@type"] ===
+      "type.googleapis.com/swiggy.presentation.food.v2.FavouriteRestaurantInfoWithStyle"
+    ) {
+      return (
+        <div>
+          {widget?.restaurants?.length > 0 && (
+            <div className="flex flex-col flex-wrap gap-4 sm:flex-row md:flex-row md:gap-10">
+              {widget?.restaurants?.map((rest, index) => (
+                <Link to={"/restaurant/" + rest.info.id}>
+                  {rest?.info?.promoted ? (
+                    <RestaurantCardWithPromoted restaurant={rest.info} />
+                  ) : (
+                    <RestuarantCard restaurant={rest.info} />
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+  };
+  const getCorrespondigUI = (data) => {
+    const type = data?.card?.card?.["@type"];
+    const cardData = data?.card?.card;
+    switch (type) {
+      case WIDGET_CONFIG:
+        return getWidgetUI(cardData);
+      default:
+        null;
+    }
+  };
+
   console.log("render");
-  return (
-    <div className="body-container">
+
+  return filteredRestaurants?.length === 0 ? (
+    <ShimmerUi />
+  ) : (
+    <>
+      {homePageData?.map((widgets) => {
+        return getCorrespondigUI(widgets);
+      })}
       <div className="flex">
         <input
           type="text"
           className="m-2 p-2 border border-solid border-black"
           value={searchInput}
-          placeholder="Restaurants.."
           onChange={(event) => setSearchInput(event.target.value)}
         />
         <button
           onClick={getSearchResults}
           className="px-4 py-2 bg-green-200 m-4"
+          data-testid="searchBtn"
         >
           Search
         </button>
         <button
           onClick={getTopRatedRestaurants}
-          className="px-4 py-2 bg-green-300 m-4"
+          className="text-xs sm:px-4 py-2 bg-green-300 m-4"
+          data-testid="topRated"
         >
           Top Rated Restaurants
         </button>
-        <input
-          type="text"
-          className="m-2 p-2 border border-solid border-black"
-          value={loggedInUser}
-          placeholder="User Name"
-          onChange={(event) => setUserInfo(event.target.value)}
-        />
-        <button>click</button>
       </div>
       {filteredRestaurants?.length > 0 && (
-        <div className="flex flex-wrap">
+        <div className="flex flex-col flex-wrap my-4 gap-5 sm:flex-row sm:flex-wrap">
           {filteredRestaurants.map((rest, index) => (
-            <Link to={"/restaurant/" + rest.info.id}>
+            <Link to={"/restaurant/" + rest.info.id} key={rest.info.id}>
               {rest?.info?.promoted ? (
                 <RestaurantCardWithPromoted restaurant={rest.info} />
               ) : (
@@ -91,8 +140,7 @@ const Body = () => {
           ))}
         </div>
       )}
-      {filteredRestaurants?.length === 0 && <ShimmerUi />}
-    </div>
+    </>
   );
 };
 export default Body;
