@@ -2,7 +2,6 @@ import axios from "axios";
 import Child1 from "./Child1";
 import Child2 from "./Child2";
 import React from "react";
-import ExClass from "./ExClass";
 class About extends React.Component {
   constructor(props) {
     super(props);
@@ -38,7 +37,6 @@ class About extends React.Component {
         <Child1 name="first" />
         <Child2 name="second" />
         <Child2 name="third" />
-        <ExClass />
       </div>
     );
   }

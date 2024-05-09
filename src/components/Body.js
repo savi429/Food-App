@@ -10,6 +10,7 @@ import { useAppContext } from "../utils/contextProvider";
 import payload from "./../utils/payload.json";
 import BannerCarousel from "./BannerCarousel";
 import TopRestaurants from "./TopRestaurants";
+import RestaurantsList from "./RestaurantsList";
 const Body = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [searchInput, setSearchInput] = useState("");
@@ -19,20 +20,24 @@ const Body = () => {
   const [homePageData, setHomePageData] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await axios.get(SWIGGY_URL);
-      setHomePageData(res?.data?.data?.cards);
-      setRestaurants(
-        res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
-          ?.restaurants
-      );
-      setFilteredRestaurants(
-        res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
-          ?.restaurants
-      );
-    };
     fetchData();
   }, []);
+  const fetchData = async () => {
+    try {
+      const res = await axios.get(SWIGGY_URL);
+      setHomePageData(res?.data?.data?.cards);
+      // setRestaurants(
+      //   res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
+      //     ?.restaurants
+      // );
+      // setFilteredRestaurants(
+      //   res?.data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
+      //     ?.restaurants
+      // );
+    } catch (err) {
+      console.log("err", err);
+    }
+  };
 
   const getTopRatedRestaurants = () => {
     setFilteredRestaurants(restaurants.slice(0, 4));
@@ -49,40 +54,19 @@ const Body = () => {
     return <h1> Look like your offline!..Please check internet connection!</h1>;
   }
   const getWidgetUI = (cardData) => {
-    const widget = cardData?.gridElements?.infoWithStyle;
-
+    // const widget = cardData?.gridElements?.infoWithStyle;
     const id = cardData?.id;
     switch (id) {
       case "whats_on_your_mind":
         return <BannerCarousel cardInfo={cardData} />;
       case "popular_restaurants_title":
-        return <h2>{cardData.title}</h2>;
+        return <h1 className="font-bold text-lg">{cardData.title}</h1>;
       case "top_brands_for_you":
         return <TopRestaurants cardInfo={cardData} />;
+      case "restaurant_grid_listing":
+        return <RestaurantsList cardInfo={cardData} />;
       default:
         return null;
-    }
-    if (
-      widget?.["@type"] ===
-      "type.googleapis.com/swiggy.presentation.food.v2.FavouriteRestaurantInfoWithStyle"
-    ) {
-      return (
-        <div>
-          {widget?.restaurants?.length > 0 && (
-            <div className="flex flex-col flex-wrap gap-4 sm:flex-row md:flex-row md:gap-10">
-              {widget?.restaurants?.map((rest, index) => (
-                <Link to={"/restaurant/" + rest.info.id}>
-                  {rest?.info?.promoted ? (
-                    <RestaurantCardWithPromoted restaurant={rest.info} />
-                  ) : (
-                    <RestuarantCard restaurant={rest.info} />
-                  )}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-      );
     }
   };
   const getCorrespondigUI = (data) => {
@@ -98,14 +82,15 @@ const Body = () => {
 
   console.log("render");
 
-  return filteredRestaurants?.length === 0 ? (
+  return homePageData?.length === 0 ? (
     <ShimmerUi />
   ) : (
     <>
-      {homePageData?.map((widgets) => {
-        return getCorrespondigUI(widgets);
-      })}
-      <div className="flex">
+      {homePageData.length > 0 &&
+        homePageData.map((widgets) => {
+          return getCorrespondigUI(widgets);
+        })}
+      {/* <div className="flex">
         <input
           type="text"
           className="m-2 p-2 border border-solid border-black"
@@ -126,8 +111,8 @@ const Body = () => {
         >
           Top Rated Restaurants
         </button>
-      </div>
-      {filteredRestaurants?.length > 0 && (
+      </div> */}
+      {/* {filteredRestaurants?.length > 0 && (
         <div className="flex flex-col flex-wrap my-4 gap-5 sm:flex-row sm:flex-wrap">
           {filteredRestaurants.map((rest, index) => (
             <Link to={"/restaurant/" + rest.info.id} key={rest.info.id}>
@@ -139,7 +124,7 @@ const Body = () => {
             </Link>
           ))}
         </div>
-      )}
+      )} */}
     </>
   );
 };

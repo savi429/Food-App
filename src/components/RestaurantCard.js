@@ -12,6 +12,7 @@ const RestuarantCard = (props) => {
       <div className="bg-gradient-to-t from-black via-transparent to-transparent rounded-lg relative">
         <img
           src={CDN_URL + cloudinaryImageId}
+          fetchpriority={props.priority ? props.priority : "high"}
           alt="Product Name"
           className="relative w-[150px] h-[100px] md:h-40 md:w-full object-cover transition-all border rounded-lg -z-10"
         />
