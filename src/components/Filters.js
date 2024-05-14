@@ -5,7 +5,7 @@ const Filters = ({ cardInfo }) => {
   const { sortConfigs, facetList } = cardInfo;
   useEffect(() => {}, []);
 
-  return <div></div>;
+  return <div>Hello Hi how are you</div>;
 };
 
 export default Filters;

@@ -8,7 +8,12 @@ const Cart = () => {
   return (
     <div className="text-center w-9/12 m-auto">
       <h3>Cart</h3>
-      <button onClick={() => dispatch(clearCart())}>Clear Cart</button>
+      <button
+        onClick={() => dispatch(clearCart())}
+        className="p-4 m-2 rounded-sm"
+      >
+        Clear Cart
+      </button>
       {cartItems.length === 0 ? (
         <>
           <h3>Add Items to your Cart</h3>
