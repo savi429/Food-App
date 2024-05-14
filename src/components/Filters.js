@@ -5,7 +5,12 @@ const Filters = ({ cardInfo }) => {
   const { sortConfigs, facetList } = cardInfo;
   useEffect(() => {}, []);
 
-  return <div></div>;
+  return (
+    <div>
+      <button>Hello</button>
+      <button>Hi</button>
+    </div>
+  );
 };
 
 export default Filters;
