@@ -13,4 +13,16 @@ const userSlice = createSlice({
 });
 
 export const { setDarkMode } = userSlice.actions;
+export const fetchAPIData = (props) => {
+  return async (dispatch, getState) => {
+    try {
+      console.log("state", getState(), props);
+      // let response = await fetch("https://api");
+      // let data = await response.json();
+      // // dispatch(setDarkMode());
+    } catch {
+      console.log(err);
+    }
+  };
+};
 export default userSlice.reducer;

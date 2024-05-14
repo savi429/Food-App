@@ -3,6 +3,7 @@ import useRestaurantMenu from "./../utils/useRestaurantMenu";
 import RestaurantCategory from "./RestaurantCategory";
 import { useState } from "react";
 import ShimmerUi from "./ShimmerUi";
+import { BsArrowDown, BsArrowUp } from "react-icons/bs";
 
 const RestaurantMenu = () => {
   const { restId } = useParams();
@@ -10,7 +11,10 @@ const RestaurantMenu = () => {
   console.log("location", location);
   const [showIndex, setShowIndex] = useState(0);
   const restInfo = useRestaurantMenu(restId);
-
+  const accordianList = [
+    { question: "Returns", answer: "Yes we do" },
+    { question: "Refunds", answer: "NO we don't do" },
+  ];
   if (restInfo === null) {
     return <ShimmerUi />;
   }
@@ -26,6 +30,7 @@ const RestaurantMenu = () => {
       {categories?.map((category, index) => (
         <RestaurantCategory
           key={category?.card?.card?.title}
+          index={index}
           category={category?.card?.card}
           showItems={index === showIndex ? true : false}
           showIndexHandler={() => setShowIndex(index)}
@@ -34,4 +39,5 @@ const RestaurantMenu = () => {
     </div>
   );
 };
+
 export default RestaurantMenu;

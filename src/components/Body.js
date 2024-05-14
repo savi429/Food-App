@@ -1,26 +1,29 @@
-import { useState, useEffect, useCallback, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import RestuarantCard, { withPromotedLabel } from "./RestaurantCard";
 import { SWIGGY_URL, TYPES, WIDGET_CONFIG } from "../utils/constants";
 import ShimmerUi from "./ShimmerUi";
-import { Link } from "react-router-dom";
 import useOnlineStatus from "./../utils/useOnlineStatus";
-import Carousel from "./Carousel";
-import { useAppContext } from "../utils/contextProvider";
-import payload from "./../utils/payload.json";
 import BannerCarousel from "./BannerCarousel";
 import TopRestaurants from "./TopRestaurants";
 import RestaurantsList from "./RestaurantsList";
+import UserContext from "../utils/UserContext";
+import { useDispatch } from "react-redux";
+import { fetchAPIData } from "../redux/userSlice";
+import Filters from "./Filters";
+
 const Body = () => {
   const [restaurants, setRestaurants] = useState([]);
-  const [searchInput, setSearchInput] = useState("");
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const onlineStatus = useOnlineStatus();
   const RestaurantCardWithPromoted = withPromotedLabel(RestuarantCard);
   const [homePageData, setHomePageData] = useState([]);
+  const { userName, setUserName } = useContext(UserContext);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     fetchData();
+    dispatch(fetchAPIData("hello"));
   }, []);
   const fetchData = async () => {
     try {
@@ -43,41 +46,34 @@ const Body = () => {
     setFilteredRestaurants(restaurants.slice(0, 4));
   };
 
-  const getSearchResults = () => {
-    const filteredResult = restaurants.filter((el) =>
-      el.info.name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    console.log("filteredRestaurants", filteredResult);
-    setFilteredRestaurants(filteredResult);
-  };
   if (!onlineStatus) {
     return <h1> Look like your offline!..Please check internet connection!</h1>;
   }
-  const getWidgetUI = (cardData) => {
-    // const widget = cardData?.gridElements?.infoWithStyle;
+  const getWidgetUI = (type, cardData) => {
     const id = cardData?.id;
-    switch (id) {
-      case "whats_on_your_mind":
-        return <BannerCarousel cardInfo={cardData} />;
-      case "popular_restaurants_title":
+    switch (type) {
+      case TYPES.WIDGET:
+        switch (id) {
+          case "whats_on_your_mind":
+            return <BannerCarousel cardInfo={cardData} />;
+          case "top_brands_for_you":
+            return <TopRestaurants cardInfo={cardData} />;
+          case "restaurant_grid_listing":
+            return <RestaurantsList cardInfo={cardData} />;
+          default:
+            return;
+        }
+      case TYPES.CONTENT:
         return <h1 className="font-bold text-lg">{cardData.title}</h1>;
-      case "top_brands_for_you":
-        return <TopRestaurants cardInfo={cardData} />;
-      case "restaurant_grid_listing":
-        return <RestaurantsList cardInfo={cardData} />;
-      default:
-        return null;
+      case TYPES.FILTERS:
+        return <Filters cardInfo={cardData} />;
     }
   };
   const getCorrespondigUI = (data) => {
     const type = data?.card?.card?.["@type"];
     const cardData = data?.card?.card;
-    switch (type) {
-      case WIDGET_CONFIG:
-        return getWidgetUI(cardData);
-      default:
-        null;
-    }
+
+    return getWidgetUI(type, cardData);
   };
 
   console.log("render");
@@ -86,6 +82,11 @@ const Body = () => {
     <ShimmerUi />
   ) : (
     <>
+      {/* <input
+        type="text"
+        onChange={(e) => setUserName(e.target.value)}
+        value={userName}
+      /> */}
       {homePageData.length > 0 &&
         homePageData.map((widgets) => {
           return getCorrespondigUI(widgets);

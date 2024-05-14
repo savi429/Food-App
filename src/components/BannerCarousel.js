@@ -47,7 +47,7 @@ const BannerCarousel = ({ cardInfo }) => {
         </div>
       </div>
 
-      <div className="overflow-x-hidden relative whitespace-nowrap">
+      <div className="overflow-x-hidden whitespace-nowrap">
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${scrollPosition}px)` }}

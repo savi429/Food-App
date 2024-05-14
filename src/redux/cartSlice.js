@@ -7,7 +7,17 @@ const cartSlice = createSlice({
   },
   reducers: {
     addItem: (state, action) => {
-      state.items = [...state.items, action.payload];
+      const existingItemIndex = state.items.findIndex(
+        (prod) => prod.id === action.payload.card.id
+      );
+      if (existingItemIndex !== -1) {
+        // If item already exists, update its quantity
+        state.items[existingItemIndex].quantity += 1;
+      } else {
+        // If item doesn't exist, add it to the cart
+        const newItem = { ...action.payload, quantity: 1 };
+        state.items.push(newItem);
+      }
     },
     removeItem: (state, action) => {
       state.items.pop();

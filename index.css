@@ -7,6 +7,3 @@
         @apply text-slate-400 bg-slate-900;
     }
 }
-.bttton-blue {
-    @apply bg-blue-500 rounded-sm text-white p-2
-}

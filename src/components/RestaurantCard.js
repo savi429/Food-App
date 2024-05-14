@@ -1,9 +1,11 @@
+import { useMemo } from "react";
 import { CDN_URL } from "../utils/constants";
 import { MdOutlineStarBorder } from "react-icons/md";
 
 const RestuarantCard = (props) => {
   const { name, cuisines, avgRating, totalFee, cloudinaryImageId, areaName } =
     props.restaurant;
+
   return (
     <div
       className="w-full h-50 sm:w-[250px] sm:h-65 flex-row md:w-[300px] md:h-80 flex md:flex-col gap-3 hover:scale-95"
@@ -30,6 +32,7 @@ const RestuarantCard = (props) => {
             />
           </div>
           <h2 className="font-bold">{avgRating}</h2>
+          <p>{props.restaurant.sla.slaString}</p>
         </div>
         <p className="py-2 text-ellipsis whitespace-nowrap overflow-hidden">
           {cuisines.join(", ")}

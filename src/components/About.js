@@ -2,6 +2,7 @@ import axios from "axios";
 import Child1 from "./Child1";
 import Child2 from "./Child2";
 import React from "react";
+import UserContext from "../utils/UserContext";
 class About extends React.Component {
   constructor(props) {
     super(props);
@@ -32,6 +33,9 @@ class About extends React.Component {
     return (
       <div className="mt-[100px]">
         <h2>Parent component</h2>
+        <UserContext.Consumer>
+          {(data) => <p>{data.loggedInUser}</p>}
+        </UserContext.Consumer>
         {this.state.users.length > 0 &&
           this.state.users.map((user) => <li key={user.id}>{user.name}</li>)}
         <Child1 name="first" />

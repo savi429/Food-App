@@ -12,8 +12,7 @@ import {
 import Error from "./src/components/Error";
 import RestaurantMenu from "./src/components/RestaurantMenu";
 import About from "./src/components/About";
-import ContextProvider from "./src/utils/contextProvider";
-// import ShimmerUi from "./src/components/ShimmerUi";
+import UserContext from "./src/utils/UserContext";
 import { Provider } from "react-redux";
 import { persistedStore, appStore } from "./src/redux/appStore";
 import { PersistGate } from "redux-persist/integration/react";
@@ -21,22 +20,25 @@ import Cart from "./src/components/Cart";
 const ToDoApp = lazy(() => import("./src/components/TodoApp"));
 
 const AppComponent = () => {
+  const [userName, setUserName] = useState();
+  useEffect(() => {
+    setUserName("savitha");
+  }, []);
   console.log(<Body />);
+
   return (
     <Provider store={appStore}>
-      <PersistGate loading={null} persistor={persistedStore}>
-        <ContextProvider>
-          <div className="relative flex flex-col">
-            <Header />
-            <div
-              className="w-10/12 mx-auto z-10"
-              style={{ marginTop: "100px" }}
-            >
-              <Outlet />
-            </div>
-          </div>
-        </ContextProvider>
-      </PersistGate>
+      {/* <PersistGate loading={null} persistor={persistedStore}> */}
+      <UserContext.Provider value={{ userName, setUserName }}>
+        <Header />
+        <main
+          className="relative w-10/12 mx-auto z-10"
+          style={{ marginTop: "84px", position: "relative" }}
+        >
+          <Outlet />
+        </main>
+      </UserContext.Provider>
+      {/* </PersistGate> */}
     </Provider>
   );
 };

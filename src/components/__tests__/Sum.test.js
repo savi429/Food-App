@@ -1,6 +1,6 @@
 import { sum } from "../Sum";
-test("calculate sum", () => {
+
+test("calculate Sum", () => {
   const result = sum(3, 4);
-  //ASSERTION
   expect(result).toBe(7);
 });
