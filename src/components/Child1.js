@@ -13,7 +13,7 @@ class Child1 extends React.Component {
 
   render() {
     console.log(this.props.name + " " + "render");
-    return <div>Child1</div>;
+    return <div>Child1 hello</div>;
   }
 }
 export default Child1;
