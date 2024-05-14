@@ -11,7 +11,7 @@ class Child2 extends React.Component {
 
   render() {
     console.log(this.props.name + " " + "render");
-    return <div>Child2</div>;
+    return <div>Child2 child2</div>;
   }
 }
 export default Child2;
